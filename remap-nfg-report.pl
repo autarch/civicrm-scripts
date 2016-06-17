@@ -132,6 +132,8 @@ sub main {
             );
         }
 
+        s/^\$// for @{$row}{qw( donation_amount net_amount our_fee )};
+
         $csv->print(
             $contributions_fh,
             [
