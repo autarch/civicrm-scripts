@@ -108,8 +108,16 @@ sub main {
 
     $csv->column_names(@nfg_columns);
 
+    my $id_dedupe = '1';
+    my %ids;
     while ( my $row = $csv->getline_hr($in_fh) ) {
         next unless $row->{status} eq 'Successful';
+
+        my $id = $row->{transaction_id};
+        if ( $ids{$id} ) {
+            $id = $id . q{-} . sprintf( '%03d', $id_dedupe++ );
+        }
+        $ids{$id} = 1;
 
         unless ( $row->{source} =~ /givezooks/i
             || grep { $_ =~ /Okay/ } $row->{public1}, $row->{public2} ) {
@@ -147,10 +155,10 @@ sub main {
                         our_fee
                         donation_date
                         donation_date
-                        transaction_id
-                        payment_method
                         )
                 },
+                $id,
+                $row->{payment_method},
                 "$row->{source} - $row->{campaign}",
                 (
                     $row->{campaign} =~ /givezooks/i
