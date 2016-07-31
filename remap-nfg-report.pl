@@ -111,7 +111,9 @@ sub main {
     while ( my $row = $csv->getline_hr($in_fh) ) {
         next unless $row->{status} eq 'Successful';
 
-        unless ( grep { $_ =~ /Okay/ } $row->{public1}, $row->{public2} ) {
+        unless ( $row->{source} =~ /givezooks/i
+            || grep { $_ =~ /Okay/ } $row->{public1}, $row->{public2} ) {
+
             say "$row->{first_name} $row->{last_name} is anonymous";
         }
 
@@ -156,9 +158,9 @@ sub main {
                     : 'Donation'
                 ),
                 (
-                    $row->{donation_frequency}
+                    $row->{donation_frequency} !~ /one time/i
                     ? "Recurring $row->{donation_frequency} donation"
-                    : q{}
+                    : "$row->{donation_frequency} donation"
                 ),
             ],
         );
