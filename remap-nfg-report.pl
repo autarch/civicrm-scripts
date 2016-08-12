@@ -6,6 +6,7 @@ use strict;
 use warnings;
 use autodie;
 
+use DateTime;
 use Path::Tiny qw( path );
 use Text::CSV_XS;
 
@@ -144,6 +145,11 @@ sub main {
 
         s/^\$// for @{$row}{qw( donation_amount net_amount our_fee )};
 
+        my ( $month, $day, $year ) = split /\//, $row->{donation_date};
+        my $date
+            = DateTime->new( year => $year, month => $month, day => $day )
+            ->ymd;
+
         $csv->print(
             $contributions_fh,
             [
@@ -153,10 +159,9 @@ sub main {
                         donation_amount
                         net_amount
                         our_fee
-                        donation_date
-                        donation_date
                         )
                 },
+                ($date) x 2,
                 $id,
                 $row->{payment_method},
                 "$row->{source} - $row->{campaign}",
