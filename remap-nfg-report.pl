@@ -166,7 +166,7 @@ sub main {
                 $row->{payment_method},
                 "$row->{source} - $row->{campaign}",
                 (
-                    $row->{campaign} =~ /givezooks/i
+                    $row->{source} =~ /givezooks/i
                     ? 'Event Fee'
                     : 'Donation'
                 ),
