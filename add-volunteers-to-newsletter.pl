@@ -13,10 +13,12 @@ use Getopt::Long;
 
 sub main {
     my $span    = 'day';
+    my $length  = 2;
     my $verbose = 0;
     GetOptions(
-        'span:s'  => \$span,
-        'verbose' => \$verbose,
+        'span:s'   => \$span,
+        'length:i' => \$length,
+        'verbose'  => \$verbose,
     );
 
     my $dbh = DBI->connect(
@@ -33,7 +35,7 @@ sub main {
     };
     die 'Could not find volunteers group' unless $group_id;
 
-    my $dt = DateTime->today->subtract( $span . 's' => 2 );
+    my $dt = DateTime->today->subtract( $span . 's' => $length );
     my $sql = <<'EOF';
 SELECT cc.first_name, cc.last_name, ce.email
   FROM civicrm_email ce
