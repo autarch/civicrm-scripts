@@ -64,11 +64,14 @@ EOF
             say 'Adding new volunteers to email lists';
             say $add;
         }
+        say 'volunteer-newsletter';
         open my $vol, '|-',
             '/usr/lib/mailman/bin/add_members -w n -a n -r - volunteer-newsletter';
         print {$vol} $add;
         close $vol;
 
+        say q{};
+        say 'announce';
         open my $ann, '|-',
             '/usr/lib/mailman/bin/add_members -w n -a n -r - announce';
         print {$ann} $add;
