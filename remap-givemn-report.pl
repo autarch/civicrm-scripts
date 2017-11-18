@@ -100,7 +100,7 @@ sub main {
 
         if ( $row->{dedication} ) {
             say "$row->{first_name} $row->{last_name} made a dedication";
-            say "  - $_ = $row->{dedication}";
+            say "  - $row->{dedication}";
         }
 
         s/^\D//
