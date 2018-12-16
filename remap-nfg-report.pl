@@ -126,6 +126,26 @@ sub main {
             say "$row->{first_name} $row->{last_name} is anonymous";
         }
 
+        if ( lc($row->{email}) eq 'anonymous' ) {
+           $row->{email} = 'anonymous@gmail.com';
+        }
+
+        if ( lc($row->{country}) eq 'anonymous' ) {
+           $row->{country} = 'US';
+        }
+
+        if ( lc($row->{state}) eq 'anonymous' ) {
+           $row->{state} = 'MN';
+        }
+
+        if ( lc($row->{zip}) eq 'anonymous' ) {
+           $row->{zip} = '55422';
+        }
+
+        if ( lc($row->{zip}) eq 'phone' ) {
+           $row->{phone} = '';
+        }
+
         if ( $row->{acknowledgement_type} ) {
             say "$row->{first_name} $row->{last_name} made a dedication";
             say "  - $_ = $row->{$_}" for qw(

@@ -11,39 +11,44 @@ use Path::Tiny qw( path );
 use Text::CSV_XS;
 
 my @givemn_columns = qw(
-    transaction_code
-    confirmation_code
+    tracking_number
     donation_date
-    donation_time
+    donation_time_eastern
     first_name
     last_name
-    address1
-    address2
+    address
     city
     state
     zip
     country
     email
-    is_anonymous
-    form_type
-    org_reporting_code
-    project_name
-    project_reporting_code
-    fundraiser_name
-    fundraiser_creator_first_name
-    fundraiser_creator_last_name
-    donation_form_url
-    referring_page_url
-    gift_was_matched
-    recurring_type
-    recurring_period
-    special_event_tag
-    processing_rate
-    donation_amount
-    donor_paid_fees
-    our_fee
-    net_amount
+    designation
     dedication
+    dedication_email
+    source
+    page_creator
+    donation_site
+    team_name
+    repeats
+    payment_method
+    origin
+    donation_amount
+    platform_rate
+    platform_cost
+    credit_card_processing_rate
+    credit_card_processing_cost
+    campaign_rate
+    campaign_cost
+    covered_cost
+    net_amount
+    refund
+    disbursement_date
+    referral_code
+    publicly_hidden
+    company
+    age
+    gender
+    phone_number
 );
 
 my @contributions_columns = (
@@ -95,19 +100,22 @@ sub main {
     $csv->column_names(@givemn_columns);
 
     while ( my $row = $csv->getline_hr($in_fh) ) {
-        # Anonymous donations have no info
-        next if $row->{is_anonymous} eq 'Yes';
-
         if ( $row->{dedication} ) {
             say "$row->{first_name} $row->{last_name} made a dedication";
             say "  - $row->{dedication}";
         }
+        if ( $row->{email} eq 'anonymous' ) {
+           $row->{email} = 'anonymous@gmail.com';
+        }
+        if ( $row->{country} eq 'USA' ) {
+           $row->{country} = 'US';
+        }
 
         s/^\D//
             for grep {defined}
-            @{$row}{qw( donation_amount net_amount our_fee )};
+            @{$row}{qw( donation_amount net_amount platform_cost )};
 
-        my ( $year, $month, $day ) = split /-/, $row->{donation_date};
+        my ( $month, $day, $year ) = split /\//, $row->{donation_date};
         my $date
             = DateTime->new( year => $year, month => $month, day => $day )
             ->ymd;
@@ -118,13 +126,13 @@ sub main {
                 @{$row}{
                     qw(
                         email
-                        donation_amount
-                        net_amount
-                        our_fee
                         )
                 },
+                abs($row->{donation_amount}),
+                abs($row->{net_amount}),
+                abs($row->{donation_amount}) - abs($row->{net_amount}),
                 ($date) x 2,
-                $row->{transaction_code},
+                $row->{tracking_number},
                 'Credit Card',
                 'GiveMN',
                 'Donation',
@@ -140,15 +148,19 @@ sub main {
                         first_name
                         last_name
                         email
-                        address1
-                        address2
+                        address
+                        )
+                },
+                q{},    # Supplement Address 1
+                @{$row}{
+                    qw(
                         city
                         state
                         zip
                         country
+                        phone_number
                         )
                 },
-                q{},    # phone
             ],
         );
     }
