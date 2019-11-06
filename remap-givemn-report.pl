@@ -12,6 +12,7 @@ use Text::CSV_XS;
 
 my @givemn_columns = qw(
     tracking_number
+    type
     donation_date
     donation_time_eastern
     first_name
@@ -29,6 +30,7 @@ my @givemn_columns = qw(
     page_creator
     donation_site
     team_name
+    giving_event_name
     repeats
     payment_method
     origin
